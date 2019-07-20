@@ -278,6 +278,7 @@ public:
 	void Save2(const char* fileName)
 	{
 		std::ofstream out(fileName, std::ios::binary);
+		out.write(reinterpret_cast<char*>(&nEntries), sizeof(nEntries));
 		for (int i = 0; i < nEntries; i++)
 		{
 			entries[i].Save(out);
@@ -304,7 +305,6 @@ public:
 	}
 	void Load2(const char* fileName)
 	{
-		nEntries = 0;
 		std::ifstream in(fileName, std::ios::binary);
 		if (!in.good())
 		{
@@ -312,12 +312,11 @@ public:
 		}
 		else
 		{
-			for (int i = 0; in.good(); i++)
+			in.read(reinterpret_cast<char*>(&nEntries), sizeof(nEntries));
+			for (int i = 0; i<nEntries; i++)
 			{
 				entries[i].Load(in);
-				nEntries++;
 			}
-			nEntries--;
 		}
 	}
 
