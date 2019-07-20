@@ -45,9 +45,10 @@ namespace CRog
 		*buff = 0;
 	}
 
-	void strcpy(const char* pSource, char* pTarget)
+	void strcpy(const char* pSource, char* pTarget, int maxBufferSize)
 	{
-		for (; *pSource!= 0; pSource++,pTarget++)
+		int n = 0;
+		for (; *pSource!= 0 && (n+1 < maxBufferSize); pSource++,pTarget++,n++)
 		{
 			*pTarget= *pSource;
 		}
@@ -198,7 +199,7 @@ private:
 			:
 			n(number)
 		{
-			CRog::strcpy(name,this->name);
+			CRog::strcpy(name,this->name, sizeof(this->name) );
 		}
 		void Print() const
 		{
@@ -220,8 +221,8 @@ private:
 			out.write(name, sizeof(name));
 			out.write(reinterpret_cast<const char*>(&n), sizeof(n));
 		}
-	private:
 		static constexpr int nameBufferSize = 10;
+	private:
 		char name[nameBufferSize];
 		int n;
 	};
@@ -237,8 +238,8 @@ public:
 	void GetEntryFromUser()
 	{
 		CRog::print("Enter name:");
-		char buff1[25];
-		CRog::read(buff1, 25);
+		char buff1[256];
+		CRog::read(buff1, sizeof(buff1) );
 		CRog::print("\n");
 		
 		int val = 201;
@@ -340,8 +341,10 @@ int main()
 {
 	CData dbase;
 	
+	bool quitting = false;
 	char ch='0';
-	while (ch != 'q')
+	
+	do
 	{
 		MenuChoice(ch);
 		char fileName[25];
@@ -355,17 +358,19 @@ int main()
 				break;
 			case 's':
 				CRog::print("\nFilename: ");
-				CRog::read(fileName, 25);
+				CRog::read(fileName, sizeof(fileName));
 				dbase.Save2(fileName);
 				break;
 			case 'l':
 				CRog::print("\nFilename: ");
-				CRog::read(fileName, 25);
+				CRog::read(fileName, sizeof(fileName));
 				dbase.Load2(fileName);
 				break;
+			case 'q':
+				quitting = true;
 		}
-	}
-	
+	} 
+	while (!quitting);
 	//while (!_kbhit());
 	return 0;
 }
