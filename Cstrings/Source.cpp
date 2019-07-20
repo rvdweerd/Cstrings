@@ -210,6 +210,16 @@ private:
 			}
 			_putch('\n');
 		}
+		void Load(std::ifstream& in)
+		{
+			in.read(name, sizeof(name));
+			in.read(reinterpret_cast<char*>(&n), sizeof(n));
+		}
+		void Save(std::ofstream& out) const
+		{
+			out.write(name, sizeof(name));
+			out.write(reinterpret_cast<const char*>(&n), sizeof(n));
+		}
 	private:
 		static constexpr int nameBufferSize = 10;
 		char name[nameBufferSize];
@@ -217,9 +227,12 @@ private:
 	};
 
 public:
-	void SetEntry(const char* p_in, const int n_in)
+	void AddEntry(const char* p_in, const int n_in)
 	{
-		entries[nEntries++] = Entry(p_in, n_in);
+		if (nEntries < maxNumberEntries)
+		{
+			entries[nEntries++] = { p_in, n_in };
+		}
 	}
 	void GetEntryFromUser()
 	{
@@ -241,7 +254,7 @@ public:
 				CRog::print("Value needs to be smaller than 200.\n");
 			}
 		}
-		SetEntry(buff1,val);
+		AddEntry(buff1,val);
 
 	}
 	void Print() const
@@ -262,6 +275,14 @@ public:
 			out.write(reinterpret_cast<char*>(&entries[i]), sizeof(entries[i]));
 		}
 	}
+	void Save2(const char* fileName)
+	{
+		std::ofstream out(fileName, std::ios::binary);
+		for (int i = 0; i < nEntries; i++)
+		{
+			entries[i].Save(out);
+		}
+	}
 	void Load(const char* fileName)
 	{
 		nEntries = 0;
@@ -277,11 +298,26 @@ public:
 			{
 				nEntries++;
 				in.read(reinterpret_cast<char*>(&entries[i]), sizeof(entries[0]));
-				//entries[0].name[2] = '0';
-
-
 				in.get(); in.seekg(-1, std::ios::cur);
 			}
+		}
+	}
+	void Load2(const char* fileName)
+	{
+		nEntries = 0;
+		std::ifstream in(fileName, std::ios::binary);
+		if (!in.good())
+		{
+			CRog::print("\nError: file not found..\n");
+		}
+		else
+		{
+			for (int i = 0; in.good(); i++)
+			{
+				entries[i].Load(in);
+				nEntries++;
+			}
+			nEntries--;
 		}
 	}
 
@@ -297,10 +333,8 @@ void MenuChoice(char& ch)
 	ch='0';
 	while (ch != 'l' && ch != 's' && ch != 'a' && ch != 'q' && ch  != 'p')
 	{
-		//CRog::read(&input, 1);
 		ch = _getch();
 	}
-	//ch[1] = 0;
 }
 
 int main()
@@ -323,12 +357,12 @@ int main()
 			case 's':
 				CRog::print("\nFilename: ");
 				CRog::read(fileName, 25);
-				dbase.Save(fileName);
+				dbase.Save2(fileName);
 				break;
 			case 'l':
 				CRog::print("\nFilename: ");
 				CRog::read(fileName, 25);
-				dbase.Load(fileName);
+				dbase.Load2(fileName);
 				break;
 		}
 	}
