@@ -45,7 +45,7 @@ namespace CRog
 		*buff = 0;
 	}
 
-	void strcpy(char* pSource, char* pTarget)
+	void strcpy(const char* pSource, char* pTarget)
 	{
 		for (; *pSource!= 0; pSource++,pTarget++)
 		{
@@ -193,10 +193,12 @@ class CData {
 private:
 	class Entry {
 	public:
-		Entry()
+		Entry() = default;
+		Entry(const char* name, const int number)
+			:
+			n(number)
 		{
-			name[0] = 0;
-			n = 0;
+			CRog::strcpy(name,this->name);
 		}
 	public:
 		static constexpr int nameBufferSize = 10;
@@ -207,15 +209,16 @@ private:
 public:
 	void SetEntry(const char* p_in, const int n_in)
 	{
-		char* pName = &entry[nEntries].name[0];
+		/*char* pName = &entry[nEntries].name[0];
 		const char* pEnd = p_in + 10;
 		for (; p_in < pEnd - 1 && *p_in != 0; p_in++, pName++)
 		{
 			*pName = *p_in;
 		}
 		*pName = 0;
-		entry[nEntries].n = n_in;
-		nEntries++;
+		entry[nEntries].n = n_in;*/
+		entry[nEntries++] = Entry(p_in, n_in);
+		//nEntries++;
 	}
 	void GetEntryFromUser()
 	{
