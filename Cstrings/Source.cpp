@@ -200,7 +200,17 @@ private:
 		{
 			CRog::strcpy(name,this->name);
 		}
-	public:
+		void Print() const
+		{
+			CRog::printFixedWidth(name, 10);
+			_putch('  |');
+			for (int j = 0; j < n; j++)
+			{
+				_putch('=');
+			}
+			_putch('\n');
+		}
+	private:
 		static constexpr int nameBufferSize = 10;
 		char name[nameBufferSize];
 		int n;
@@ -209,16 +219,7 @@ private:
 public:
 	void SetEntry(const char* p_in, const int n_in)
 	{
-		/*char* pName = &entry[nEntries].name[0];
-		const char* pEnd = p_in + 10;
-		for (; p_in < pEnd - 1 && *p_in != 0; p_in++, pName++)
-		{
-			*pName = *p_in;
-		}
-		*pName = 0;
-		entry[nEntries].n = n_in;*/
-		entry[nEntries++] = Entry(p_in, n_in);
-		//nEntries++;
+		entries[nEntries++] = Entry(p_in, n_in);
 	}
 	void GetEntryFromUser()
 	{
@@ -247,23 +248,18 @@ public:
 	{
 		CRog::print("\n     Beatiful Chart Bitches!\n");
 		CRog::print("     -----------------------\n\n");
-		for (int i = 0; i < nEntries; i++)
+		for (int i=0;i<nEntries;i++)
 		{
-			CRog::printFixedWidth(entry[i].name,10);
-			_putch('  |');
-			for (int j = 0; j < entry[i].n; j++)
-			{
-				_putch('=');
-			}
-			_putch('\n');
+			entries[i].Print();
 		}
+		
 	}
 	void Save(const char* fileName) 
 	{
 		std::ofstream out(fileName, std::ios::binary);
 		for (int i = 0; i < nEntries; i++)
 		{
-			out.write(reinterpret_cast<char*>(&entry[i]), sizeof(entry[i]));
+			out.write(reinterpret_cast<char*>(&entries[i]), sizeof(entries[i]));
 		}
 	}
 	void Load(const char* fileName)
@@ -280,8 +276,8 @@ public:
 			for (int i = 0; in.good(); i++)
 			{
 				nEntries++;
-				in.read(reinterpret_cast<char*>(&entry[i]), sizeof(entry[0]));
-				//entry[0].name[2] = '0';
+				in.read(reinterpret_cast<char*>(&entries[i]), sizeof(entries[0]));
+				//entries[0].name[2] = '0';
 
 
 				in.get(); in.seekg(-1, std::ios::cur);
@@ -291,7 +287,7 @@ public:
 
 private:
 	static constexpr int maxNumberEntries = 50;
-	Entry entry[maxNumberEntries];
+	Entry entries[maxNumberEntries];
 	int nEntries = 0;
 };
 
