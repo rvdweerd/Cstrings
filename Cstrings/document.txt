@@ -1,0 +1,97 @@
+/*
+	std::ifstream in("document.txt");
+	if (!in)
+	{
+		CRog::print("Failed to open file");
+		while (!_kbhit());
+		return -1;
+	}
+		CRog::print("File successfully opened\n==========================\n");
+		int count=0;
+
+		in.seekg(0,std::ios_base::end);
+		int len = int(in.tellg());
+		in.seekg(0);
+		for(char c = in.get(); in.good(); c=in.get())
+		{
+			_putch(c);
+			count++;
+		}
+		
+		char ch[50];
+		CRog::int2str3(len, ch, 50);
+		CRog::print("\n==========================\nFilesize = ");
+		CRog::print(ch); 
+		CRog::print(" bytes\n\n");
+		*/
+
+		/*
+		std::ofstream out("out.txt");
+		out.seekp(0, std::ios::end);
+		for (char c = _getch(); c != 13; c = _getch())
+		{
+			out.put(c);
+			_putch(c);
+		}
+		out.close();
+		*/
+
+		//std::ofstream out2("test.dat", std::ios::binary);
+		//const char* data = "rogier=\n\nsweet";
+		//const char data2[50] = "rogier=\n\nsssweet";
+		//for (char c : data2)
+		//{
+		//	out2.put(c);
+		//}
+		//out2.close();
+
+		//const int myInt = 1023467;
+		//out2.write(reinterpret_cast<const char*>(&myInt), 3);// sizeof(int) );
+		//out2.close();
+		std::ifstream in("test.dat", std::ios::binary);
+		int data;
+		in.read(reinterpret_cast<char*>(&data), sizeof(int));
+		char buf[256];
+		CRog::int2str3(data, buf, 256);
+		CRog::print(buf);
+
+
+
+	//int count = 1;
+	/*char answer[5];
+	CRog::readNumber(answer);
+	while (CRog::str2int(answer) != 9999)
+	{
+		//print("Enter a number: ");
+		//char answer[5];
+		//read(answer, 5); 
+		//count = str2int2(answer);
+		
+		const int res = CRog::fib_it(CRog::str2int(answer));
+		char ch[10];
+		CRog::int2str3(res, ch);
+		
+
+		
+		CRog::print("\nFib("); 
+		CRog::print(answer); 
+		CRog::print(") = ");
+		CRog::print(ch);
+		CRog::print("\n");
+		CRog::readNumber(answer);
+	} 
+	//while (count != 0);
+	
+	char msg[] = { 'T','e','s','t',0 };
+	const char msg2[] = "Double quotes \"..\"stick a null terminator\n \t by default, ain't that \\nice!";
+	msg[0] = '#';
+	const char* waifu = "MYWIFE\n";
+	print(msg);
+	print(msg2);
+	print(waifu);
+
+	print("Type some shit: ");
+	char field[10];
+	read(field,10);
+	print(field);
+	*/
