@@ -211,12 +211,12 @@ private:
 			}
 			_putch('\n');
 		}
-		void Load(std::ifstream& in)
+		void Deserialize(std::ifstream& in)
 		{
 			in.read(name, sizeof(name));
 			in.read(reinterpret_cast<char*>(&n), sizeof(n));
 		}
-		void Save(std::ofstream& out) const
+		void Serialize(std::ofstream& out) const
 		{
 			out.write(name, sizeof(name));
 			out.write(reinterpret_cast<const char*>(&n), sizeof(n));
@@ -233,6 +233,17 @@ public:
 		if (nEntries < maxNumberEntries)
 		{
 			entries[nEntries++] = { p_in, n_in };
+		}
+	}
+	void RemoveEntry(int n)
+	{
+		if (n < nEntries && n>=0)
+		{
+			for (int i = n; i < nEntries-1; i++)
+			{
+				entries[i] = entries[i + 1];
+			}
+			nEntries--;
 		}
 	}
 	void GetEntryFromUser()
@@ -268,43 +279,17 @@ public:
 		}
 		
 	}
-	void Save(const char* fileName) 
-	{
-		std::ofstream out(fileName, std::ios::binary);
-		for (int i = 0; i < nEntries; i++)
-		{
-			out.write(reinterpret_cast<char*>(&entries[i]), sizeof(entries[i]));
-		}
-	}
-	void Save2(const char* fileName)
+	void Save(const char* fileName)
 	{
 		std::ofstream out(fileName, std::ios::binary);
 		out.write(reinterpret_cast<char*>(&nEntries), sizeof(nEntries));
 		for (int i = 0; i < nEntries; i++)
 		{
-			entries[i].Save(out);
+			entries[i].Serialize(out);
 		}
 	}
+
 	void Load(const char* fileName)
-	{
-		nEntries = 0;
-		std::ifstream in(fileName , std::ios::binary);
-		if (!in.good())
-		{
-			CRog::print("\nError: file not found..\n");
-		}
-		else
-		{
-			in.get(); in.seekg(0);
-			for (int i = 0; in.good(); i++)
-			{
-				nEntries++;
-				in.read(reinterpret_cast<char*>(&entries[i]), sizeof(entries[0]));
-				in.get(); in.seekg(-1, std::ios::cur);
-			}
-		}
-	}
-	void Load2(const char* fileName)
 	{
 		std::ifstream in(fileName, std::ios::binary);
 		if (!in.good())
@@ -316,7 +301,7 @@ public:
 			in.read(reinterpret_cast<char*>(&nEntries), sizeof(nEntries));
 			for (int i = 0; i<nEntries; i++)
 			{
-				entries[i].Load(in);
+				entries[i].Deserialize(in);
 			}
 		}
 	}
@@ -329,9 +314,9 @@ private:
 
 void MenuChoice(char& ch)
 {
-	CRog::print("\n(l)oad (s)ave (a)dd (q)uit or (p)rint\n");
+	CRog::print("\n(l)oad (s)ave (a)dd (r)emove (q)uit or (p)rint\n");
 	ch='0';
-	while (ch != 'l' && ch != 's' && ch != 'a' && ch != 'q' && ch  != 'p')
+	while (ch != 'l' && ch != 's' && ch != 'a' && ch != 'q' && ch  != 'p' && ch != 'r')
 	{
 		ch = _getch();
 	}
@@ -356,15 +341,21 @@ int main()
 			case 'a':
 				dbase.GetEntryFromUser();
 				break;
+			case 'r':
+				CRog::print("\nWhich entry number? ");
+				char buff[3];
+				CRog::read(buff, 3);
+				dbase.RemoveEntry(CRog::str2int2(buff)-1);
+				break;					
 			case 's':
 				CRog::print("\nFilename: ");
 				CRog::read(fileName, sizeof(fileName));
-				dbase.Save2(fileName);
+				dbase.Save(fileName);
 				break;
 			case 'l':
 				CRog::print("\nFilename: ");
 				CRog::read(fileName, sizeof(fileName));
-				dbase.Load2(fileName);
+				dbase.Load(fileName);
 				break;
 			case 'q':
 				quitting = true;

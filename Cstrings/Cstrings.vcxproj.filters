@@ -23,9 +23,6 @@
     <Text Include="document.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="out.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="test.txt">
       <Filter>Resource Files</Filter>
     </Text>
